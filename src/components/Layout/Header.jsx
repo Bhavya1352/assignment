@@ -20,6 +20,14 @@ export const Header = ({ toggleSidebar }) => {
     });
   };
 
+  const handleQuickSearch = (e) => {
+    const value = e.target.value;
+    if (value.length > 0 && state.activeTab !== 'transactions') {
+      dispatch({ type: 'SET_TAB', payload: 'transactions' });
+    }
+    dispatch({ type: 'SET_FILTER', payload: { key: 'search', value } });
+  };
+
   const handleThemeToggle = () => {
     dispatch({ type: 'SET_DARK_MODE', payload: !darkMode });
   };
@@ -34,7 +42,12 @@ export const Header = ({ toggleSidebar }) => {
         </button>
         <div className="header-search">
           <FiSearch className="search-icon" />
-          <input type="text" placeholder="Quick search..." />
+          <input 
+            type="text" 
+            placeholder="Quick search..." 
+            value={state.filters?.search || ''}
+            onChange={handleQuickSearch}
+          />
         </div>
       </div>
 
@@ -73,17 +86,18 @@ export const Header = ({ toggleSidebar }) => {
           )}
         </div>
 
-        <button 
-          className="icon-btn theme-toggle tooltip-container" 
-          onClick={handleThemeToggle}
-          aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-        >
+        <button className="icon-btn theme-toggle tooltip-container" onClick={handleThemeToggle} aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}>
           {darkMode ? <FiSun /> : <FiMoon />}
         </button>
         
-        <button className="icon-btn notifications-btn">
+        <button 
+          className="icon-btn notifications-btn" 
+          onClick={() => dispatch({ type: 'ADD_NOTIFICATION', payload: { message: 'You are all caught up!', type: 'info' } })}
+        >
           <FiBell />
-          <span className="notification-badge">3</span>
+          {state.notifications?.length > 0 && (
+            <span className="notification-badge">{state.notifications.length}</span>
+          )}
         </button>
       </div>
     </header>
